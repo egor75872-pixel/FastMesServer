@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🚀 FastMes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= ЭКРАН ВХОДА / РЕГИСТРАЦИИ ================= -->
+    <div id="authScreen" class="screen screen-auth">
+        <div class="main-wrapper">
+            <div class="card" id="authCard">
+
+                <div class="card-header">
+                    <div class="logo-area">
+                        <span class="rocket-icon">🚀</span>
+                        <span class="rocket-trail">FastMes</span>
+                    </div>
+                    <div class="theme-dropdown-container">
+                        <span class="theme-trigger-btn" onclick="toggleThemeMenu(event, 'authThemeMenu')">Тема 🌓</span>
+                        <div class="theme-menu" id="authThemeMenu">
+                            <div class="theme-option" onclick="selectTheme('light')">Светлая тема ☀️</div>
+                            <div class="theme-option" onclick="selectTheme('dark')">Тёмная тема 🌙</div>
+                            <div class="theme-option" onclick="selectTheme('system')">По умолчанию 💻</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="statusNotification" class="notification-box" style="display: none;"></div>
+
+                <div id="loginFormSection" class="form-section">
+                    <h2 class="form-title">Вход</h2>
+                    <div class="single-gray-container">
+                        <div class="input-row">
+                            <label class="input-label">Логин</label>
+                            <input type="text" id="loginLogin" placeholder="Ваш логин..." autocomplete="off">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Пароль</label>
+                            <input type="password" id="loginPassword" placeholder="Ваш пароль...">
+                        </div>
+                    </div>
+                    <button class="neon-btn" id="loginBtn" onclick="processLogin()">Войти</button>
+                </div>
+
+                <div id="registerFormSection" class="form-section" style="display: none;">
+                    <h2 class="form-title">Регистрация</h2>
+                    <div class="single-gray-container">
+                        <div class="input-row">
+                            <label class="input-label">Ваше имя</label>
+                            <input type="text" id="regName" placeholder="Ваше имя..." autocomplete="off">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Придумайте логин</label>
+                            <input type="text" id="regLogin" placeholder="Логин для входа..." autocomplete="off">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Пароль</label>
+                            <input type="password" id="regPassword" placeholder="От 6 до 30 символов...">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Подтвердите пароль</label>
+                            <input type="password" id="regPasswordConfirm" placeholder="Повторите пароль...">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Слово-подсказка (для восстановления)</label>
+                            <input type="text" id="regHintWord" placeholder="Например: имя питомца..." autocomplete="off">
+                        </div>
+                    </div>
+                    <button class="neon-btn" onclick="processRegistration()">Зарегистрироваться</button>
+                </div>
+
+                <div id="forgotPasswordSection" class="form-section" style="display: none;">
+                    <h2 class="form-title">Восстановление</h2>
+                    <div class="single-gray-container">
+                        <div class="input-row">
+                            <label class="input-label">Введите ваш логин</label>
+                            <input type="text" id="forgotLogin" placeholder="Логин..." autocomplete="off">
+                        </div>
+                        <div class="input-row">
+                            <label class="input-label">Слово-подсказка</label>
+                            <input type="text" id="forgotHintWord" placeholder="Ответ на ваш вопрос..." autocomplete="off">
+                        </div>
+                    </div>
+                    <button class="neon-btn" onclick="processPasswordRecovery()">Проверить слово</button>
+                </div>
+
+            </div>
+
+            <div class="outer-links" id="outerLinksHolder">
+                <div id="forgotLinkOuter" class="forgot-container" style="display: block;">
+                    <span class="action-link" onclick="showForm('forgotPasswordSection')">Забыли пароль?</span>
+                </div>
+                <p id="switchModeTextOuter" class="switch-mode-text">
+                    Нет аккаунта? <span class="action-link highlight" onclick="showForm('registerFormSection')">Зарегистрироваться</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ЭКРАН ЗАГРУЗКИ (переход после входа) ================= -->
+    <div id="loadingScreen" class="screen screen-loading" style="display:none;">
+        <div class="loading-box">
+            <span class="rocket-icon loading-rocket">🚀</span>
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Заходим в FastMes...</div>
+        </div>
+    </div>
+
+    <!-- ================= ЭКРАН МЕССЕНДЖЕРА ================= -->
+    <div id="appScreen" class="screen screen-app" style="display:none;">
+
+        <nav class="nav-bar" id="navBar">
+            <div class="nav-item" data-tab="chats" onclick="switchTab('chats', event)"><span>💬</span> <span class="label">Чаты</span></div>
+            <div class="nav-item" data-tab="contacts" onclick="switchTab('contacts', event)"><span>👥</span> <span class="label">Контакты</span></div>
+            <div class="nav-item" data-tab="requests" onclick="switchTab('requests', event)"><span>👥</span> <span class="label">Заявки</span><span id="requestsBadge" class="badge" style="display:none;">0</span></div>
+            <div class="nav-item" data-tab="profile" onclick="switchTab('profile', event)"><span>👤</span> <span class="label">Профиль</span></div>
+            <div class="nav-item" data-tab="settings" onclick="switchTab('settings', event)"><span>⚙️</span> <span class="label">Настройки</span></div>
+        </nav>
+
+        <div id="appThemeMenu" class="theme-menu" style="display:none;">
+            <div class="theme-option" onclick="selectTheme('light')">Светлая тема ☀️</div>
+            <div class="theme-option" onclick="selectTheme('dark')">Тёмная тема 🌙</div>
+        </div>
+
+        <div id="requestsPanel" class="requests-panel" style="display:none;">
+            <div class="requests-header">Заявки в друзья</div>
+            <div id="requestsList" class="requests-empty">Пока нет новых заявок</div>
+        </div>
+
+        <div id="settingsPanel" class="requests-panel" style="display:none;">
+            <div class="requests-header">Настройки</div>
+            <label class="ghost-toggle">
+                <input type="checkbox" id="ghostModeCheckbox" onchange="toggleGhostMode(this.checked)">
+                Режим призрака (скрыть онлайн и "прочитано")
+            </label>
+        </div>
+
+        <div id="profilePanel" class="requests-panel" style="display:none;">
+            <div class="requests-header">Мой профиль</div>
+            <div class="profile-content">
+                <div class="profile-item">
+                    <div class="profile-label">Имя</div>
+                    <div id="profileName" class="profile-value"></div>
+                </div>
+                <div class="profile-item">
+                    <div class="profile-label">Мой ID</div>
+                    <div class="profile-id-container">
+                        <div id="profileId" class="profile-value profile-id"></div>
+                        <button class="copy-btn" onclick="copyId()" title="Скопировать ID">📋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="chat-menu" id="chatMenu">
+            <div class="menu-header"><h1>🚀 FastMes</h1></div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Введите ID друга..." oninput="searchUser()">
+                <div id="searchResult"></div>
+            </div>
+            <div class="chat-list" id="chatList"></div>
+        </aside>
+
+        <main class="chat-main" id="chatWindow">
+            <div id="welcomeMsg">Выберите чат для начала общения</div>
+            <div id="messages" class="messages-container">
+                <div class="chat-header">
+                    <button onclick="closeChat()">⬅</button>
+                    <div class="chat-header-info">
+                        <div id="chatTitle">Чат</div>
+                        <div id="chatSubtitle" class="chat-subtitle"></div>
+                    </div>
+                    <div class="chat-call-buttons">
+                        <button onclick="startCall('voice')" title="Голосовой звонок">📞</button>
+                        <button onclick="startCall('video')" title="Видеозвонок">📹</button>
+                    </div>
+                </div>
+                <div id="msgLog"></div>
+                <div class="input-area">
+                    <input type="text" id="msgInput" placeholder="Введите сообщение...">
+                    <button class="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= ВХОДЯЩИЙ ЗВОНОК ================= -->
+    <div id="incomingCallOverlay" class="call-overlay" style="display:none;">
+        <div class="call-card">
+            <div class="call-avatar">📞</div>
+            <div id="incomingCallText">Входящий звонок</div>
+            <div class="call-actions">
+                <button class="call-accept" onclick="acceptCall()">Принять</button>
+                <button class="call-decline" onclick="declineCall()">Отклонить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= АКТИВНЫЙ ЗВОНОК ================= -->
+    <div id="activeCallOverlay" class="call-overlay" style="display:none;">
+        <div class="call-active-area">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <video id="localVideo" autoplay playsinline muted></video>
+            <div id="callStatusText" class="call-status-text">Соединение...</div>
+            <div class="call-actions">
+                <button class="call-decline" onclick="hangUp()">Завершить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
